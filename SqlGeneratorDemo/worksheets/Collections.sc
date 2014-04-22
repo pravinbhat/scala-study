@@ -72,4 +72,44 @@ object Collections {
   val kwhere = kaSeq.mkString(" and ")            //> kwhere  : String = Thousands='1000' and Ones='1' and Tens='10' and Ten Thou
                                                   //| sands='10000' and Hundreds='100'
   
+  // A DSL like syntax
+  case class InsertSpec(table : String = "defaultTable", fields : String, rows : String)
+  
+  object Insert {
+  	// verbose dsl
+  	
+  	def into (tableName : String) = new {
+  		def fields( fields : String) = new {
+  			def values( values : String) =	InsertSpec(tableName,fields,values)
+  		}
+  	}
+
+  	// more spare dsl
+  	def apply(tableName : String) = (fields : String) => new {
+  			def values( values : String) =	InsertSpec(tableName,fields,values)
+ 		}
+  	
+  }
+  
+  // Verbose DSL Examples
+  val InsertVerboseDslOperatorNotation = Insert into "tableName" fields "hello|goodbye" values "(h|g),(five|nine)"
+                                                  //> InsertVerboseDslOperatorNotation  : Collections.InsertSpec = InsertSpec(tab
+                                                  //| leName,hello|goodbye,(h|g),(five|nine))
+  
+	val InsertVerboseDslMethodNotation = Insert.into("tableName").fields("hello|goodbye").values("(h|g),(five|nine)")
+                                                  //> InsertVerboseDslMethodNotation  : Collections.InsertSpec = InsertSpec(table
+                                                  //| Name,hello|goodbye,(h|g),(five|nine))
+  
+  // Sparse DSL Examples
+  val InsertSparseDslOperatorNotation = Insert("tableName") ("hello|goodbye") values "(h|g),(five|nine)"
+                                                  //> InsertSparseDslOperatorNotation  : Collections.InsertSpec = InsertSpec(tabl
+                                                  //| eName,hello|goodbye,(h|g),(five|nine))
+ 
+ 	val InsertSparseDslMethodNotation = Insert("tableName")("hello|goodbye").values("(h|g),(five|nine)")
+                                                  //> InsertSparseDslMethodNotation  : Collections.InsertSpec = InsertSpec(tableN
+                                                  //| ame,hello|goodbye,(h|g),(five|nine))
+ 
+  
+  
+  
 }
